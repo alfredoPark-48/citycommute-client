@@ -1,5 +1,6 @@
 {
   "name": "citycommute-client",
+  "description": "High-fidelity React-based visualization for the CityCommute agent-based work commute simulation.",
   "private": true,
   "version": "1.0.0",
   "license": "MIT",
