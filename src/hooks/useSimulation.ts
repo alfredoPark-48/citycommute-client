@@ -35,7 +35,7 @@ export const useSimulation = () => {
           setConfig(result.data);
         } else {
           toast.error('Failed to load configuration', {
-            description: result.message || 'Unknown error',
+            description: `[${result.code}] ${result.message || 'Unknown error'}`,
           });
         }
       } catch (error) {

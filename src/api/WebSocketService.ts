@@ -32,11 +32,12 @@ class WebSocketService {
         const response = data as ApiResponse;
         if (response.success) {
           toast.success(response.message, {
-            description: `Event Code: ${response.code}`,
+            duration: 3000,
           });
         } else {
           toast.error(response.message, {
             description: `Error Code: ${response.code}`,
+            duration: 6000,
           });
         }
         return;
