@@ -3,9 +3,20 @@ import { SimulationState, SimulationConfig, Command } from '../types';
 import { wsService } from '../api/WebSocketService';
 
 const getEnv = (key: string) => (window as any).ENV?.[key] || import.meta.env[key];
+
 const API_URL = getEnv('VITE_API_URL');
 
 export const useSimulation = () => {
+  // Senior Debug: Instrument environment variables
+  useEffect(() => {
+    console.group("🏢 CityCommute Diagnostics");
+    console.log("Runtime ENV (Injected):", (window as any).ENV);
+    console.log("Build ENV (Vite):", import.meta.env);
+    console.log("Resolved API_URL:", API_URL);
+    console.log("Resolved WS_URL:", getEnv('VITE_WS_URL'));
+    console.groupEnd();
+  }, []);
+
   const [state, setState] = useState<SimulationState | null>(null);
   const [config, setConfig] = useState<SimulationConfig | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
