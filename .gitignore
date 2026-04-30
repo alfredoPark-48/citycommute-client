@@ -10,7 +10,14 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
+
+# Environments
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env*
 
 # Editor directories and files
 .vscode/*
@@ -24,7 +31,7 @@ dist-ssr
 *.sw?
 
 # Vite
-# .vite/
+.vite/
 
 # TypeScript
 *.tsbuildinfo
