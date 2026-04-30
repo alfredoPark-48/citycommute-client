@@ -13,5 +13,9 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
-  ]
+  ],
+  "vars": {
+    "VITE_API_URL": "https://citycommute-server.up.railway.app",
+    "VITE_WS_URL": "wss://citycommute-server.up.railway.app/ws"
+  }
 }
