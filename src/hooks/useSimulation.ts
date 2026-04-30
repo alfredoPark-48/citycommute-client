@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { SimulationState, SimulationConfig, Command } from '../types';
 import { wsService } from '../api/WebSocketService';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const getEnv = (key: string) => (window as any).ENV?.[key] || import.meta.env[key];
+const API_URL = getEnv('VITE_API_URL');
 
 export const useSimulation = () => {
   const [state, setState] = useState<SimulationState | null>(null);
@@ -29,7 +30,7 @@ export const useSimulation = () => {
 
   // WebSocket Connection & Message Handling
   useEffect(() => {
-    const wsUrl = import.meta.env.VITE_WS_URL;
+    const wsUrl = getEnv('VITE_WS_URL');
     wsService.connect(wsUrl);
 
     const unsubscribe = wsService.subscribe((data: any) => {
