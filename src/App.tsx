@@ -1,97 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { SimulationGrid } from './components/Simulation/SimulationGrid';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { Controls, SettingsPanel } from './components/Controls/Controls';
 import { Legend } from './components/Layout/Legend';
-import { wsService } from './api/WebSocketService';
-import { SimulationState, SimulationConfig } from './types';
+import { useSimulation } from './hooks/useSimulation';
 import './styles/global.css';
 
-const getEnv = (key: string) => (window as any).ENV?.[key] || import.meta.env[key];
-
-const API_URL = getEnv('VITE_API_URL');
-
 const App: React.FC = () => {
-  const [state, setState] = useState<SimulationState | null>(null);
-  const [config, setConfig] = useState<SimulationConfig | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(300);
-  const [showSettings, setShowSettings] = useState(true);
-  const gridCache = useRef<string[][] | null>(null);
-
-  useEffect(() => {
-    // Initial config fetch
-    fetch(`${API_URL}/config`)
-      .then(r => r.json())
-      .then(setConfig)
-      .catch(console.error);
-
-    const wsUrl = getEnv('VITE_WS_URL');
-    
-    wsService.connect(wsUrl);
-    
-    const unsubscribe = wsService.subscribe((data: any) => {
-      if (data.type === 'config_updated') {
-        setConfig(data.config);
-        return;
-      }
-
-      if (data.tick !== undefined) {
-        if (data.grid) {
-          gridCache.current = data.grid;
-        }
-        
-        setState(prevState => ({
-          ...data,
-          grid: data.grid || gridCache.current || prevState?.grid
-        }));
-        
-        if (data.running === false && isPlaying) {
-          setIsPlaying(false);
-        }
-      }
-    });
-
-    return () => {
-      unsubscribe();
-      wsService.disconnect();
-    };
-  }, []);
-
-  const handlePlay = () => {
-    setIsPlaying(true);
-    setShowSettings(false);
-    wsService.sendCommand({ type: 'play' });
-  };
-
-  const handlePause = () => {
-    setIsPlaying(false);
-    wsService.sendCommand({ type: 'pause' });
-  };
-
-  const handleStep = () => {
-    setIsPlaying(false);
-    setShowSettings(false);
-    wsService.sendCommand({ type: 'step' });
-  };
-
-  const handleReset = () => {
-    setIsPlaying(false);
-    setShowSettings(true);
-    wsService.sendCommand({ type: 'reset' });
-  };
-
-  const handleSpeedChange = (newSpeed: number) => {
-    setSpeed(newSpeed);
-    wsService.sendCommand({ type: 'set_speed', value: newSpeed });
-  };
-
-  const handleConfigChange = (newConfig: Partial<SimulationConfig>) => {
-    if (!config) return;
-    const updated = { ...config, ...newConfig };
-    setConfig(updated);
-    wsService.sendCommand({ type: 'update_config', config: updated });
-  };
+  const { 
+    state, 
+    config, 
+    isPlaying, 
+    speed, 
+    showSettings, 
+    actions 
+  } = useSimulation();
 
   if (!state) {
     return (
@@ -117,18 +40,18 @@ const App: React.FC = () => {
       <main className="space-y-8">
         <Controls 
           isPlaying={isPlaying}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onStep={handleStep}
-          onReset={handleReset}
+          onPlay={actions.play}
+          onPause={actions.pause}
+          onStep={actions.step}
+          onReset={actions.reset}
           speed={speed}
-          onSpeedChange={handleSpeedChange}
+          onSpeedChange={actions.setSpeed}
         />
 
         {config && (
           <SettingsPanel 
             config={config} 
-            onConfigChange={handleConfigChange}
+            onConfigChange={actions.updateConfig}
             isVisible={showSettings}
           />
         )}
