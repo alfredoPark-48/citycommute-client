@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { SimulationState, SimulationConfig, Command } from '../types';
+import { toast } from 'sonner';
+import { SimulationState, SimulationConfig, Command, ApiResponse } from '../types';
 import { wsService } from '../api/WebSocketService';
 
 const getEnv = (key: string) => (window as any).ENV?.[key] || import.meta.env[key];
@@ -29,10 +30,19 @@ export const useSimulation = () => {
     const fetchConfig = async () => {
       try {
         const response = await fetch(`${API_URL}/config`);
-        const data = await response.json();
-        setConfig(data);
+        const result: ApiResponse<SimulationConfig> = await response.json();
+        if (result.success && result.data) {
+          setConfig(result.data);
+        } else {
+          toast.error('Failed to load configuration', {
+            description: result.message || 'Unknown error',
+          });
+        }
       } catch (error) {
         console.error('Failed to fetch simulation config:', error);
+        toast.error('Network Error', {
+          description: 'Could not connect to the simulation API.',
+        });
       }
     };
 

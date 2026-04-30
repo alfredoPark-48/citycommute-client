@@ -58,6 +58,14 @@ export interface SimulationConfig {
   regenerate_agents: boolean;
 }
 
+export interface ApiResponse<T = any> {
+  success: boolean;
+  message: string;
+  code: string;
+  data?: T;
+  meta?: Record<string, any>;
+}
+
 export type CommandType = 'play' | 'pause' | 'step' | 'reset' | 'set_speed' | 'update_config';
 
 export interface Command {
