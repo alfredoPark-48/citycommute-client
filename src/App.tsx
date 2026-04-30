@@ -7,7 +7,9 @@ import { wsService } from './api/WebSocketService';
 import { SimulationState, SimulationConfig } from './types';
 import './styles/global.css';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const getEnv = (key: string) => (window as any).ENV?.[key] || import.meta.env[key];
+
+const API_URL = getEnv('VITE_API_URL');
 
 const App: React.FC = () => {
   const [state, setState] = useState<SimulationState | null>(null);
@@ -24,7 +26,7 @@ const App: React.FC = () => {
       .then(setConfig)
       .catch(console.error);
 
-    const wsUrl = import.meta.env.VITE_WS_URL;
+    const wsUrl = getEnv('VITE_WS_URL');
     
     wsService.connect(wsUrl);
     
