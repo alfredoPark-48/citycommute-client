@@ -51,7 +51,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats }) => {
       className="mb-12 w-[100vw] relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]"
     >
       <div className="max-w-[1400px] mx-auto bg-slate-800/40 border border-slate-700/50 rounded-3xl shadow-lg overflow-hidden transition-all duration-300">
-        <CollapsibleTrigger asChild className="w-full">
+        <CollapsibleTrigger className="w-full">
           <button
             className="w-full flex items-center justify-between p-4 md:p-6 hover:bg-slate-800/60 transition-all duration-300 group"
           >
