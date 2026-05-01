@@ -1,13 +1,13 @@
 import React from 'react';
 import { Toaster } from 'sonner';
-import { SimulationGrid } from './components/Simulation/SimulationGrid';
-import { Dashboard } from './components/Dashboard/Dashboard';
-import { Controls } from './components/Controls/Controls';
-import { SettingsPanel } from './components/Controls/SettingsPanel';
-import { Legend } from './components/Layout/Legend';
-import { LoadingScreen } from './components/Layout/LoadingScreen';
-import { useSimulation } from './hooks/useSimulation';
-import { PageLayout } from './components/Layout/PageLayout';
+import { SimulationGrid } from './components/simulation/SimulationGrid';
+import { Dashboard } from './components/dashboard/Dashboard';
+import { Controls } from './components/controls/Controls';
+import { SettingsPanel } from './components/controls/SettingsPanel';
+import { Legend } from './components/layout/Legend';
+import { LoadingScreen } from './components/layout/LoadingScreen';
+import { useSimulation } from './hooks/use-simulation';
+import { PageLayout } from './components/layout/PageLayout';
 
 const App: React.FC = () => {
   const {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { TrafficLight } from '../../types';
 import { CELL_BASE, CHAR_CLASS, LIGHT_CLASSES } from '../../config/constants';
+import { cn } from '@/lib/utils';
 
 interface GridCellProps {
   x: number;
@@ -15,8 +16,8 @@ export const GridCell: React.FC<GridCellProps> = React.memo(({ x, y, char, light
 
   return (
     <div
-      className={`${CELL_BASE} ${baseClass} ${lightClass}`}
-      title={`(${x},${y}) ${char}${light ? ` | 🚦 ${light.state.toUpperCase()} (${light.timer})` : ''}`}
+      className={cn(CELL_BASE, baseClass, lightClass, "grid-cell-transition")}
+      title={`Grid Unit [${x},${y}] | Type: ${char}${light ? ` | Signal: ${light.state.toUpperCase()} (${light.timer}s)` : ''}`}
     />
   );
 });

@@ -1,9 +1,17 @@
 import React from 'react';
 import { Agent as AgentType } from '../../types';
+import { cn } from '@/lib/utils';
 
 interface AgentProps {
   agent: AgentType;
 }
+
+const BUS_COLORS: Record<string, string> = {
+  "1": "bg-rose-500 shadow-rose-500/50 border-rose-200/50",
+  "2": "bg-purple-500 shadow-purple-500/50 border-purple-200/50",
+  "3": "bg-emerald-500 shadow-emerald-500/50 border-emerald-200/50",
+  "4": "bg-amber-500 shadow-amber-500/50 border-amber-200/50",
+};
 
 export const Agent: React.FC<AgentProps> = React.memo(({ agent }) => {
   let content = "";

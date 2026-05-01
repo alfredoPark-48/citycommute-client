@@ -3,6 +3,7 @@ import { Agent as AgentType, TrafficLight } from '../../types';
 import { GridCell } from './GridCell';
 import { Agent } from './Agent';
 import { CELL_SIZE, GAP, STEP } from '../../config/constants';
+import { cn } from '@/lib/utils';
 
 interface GridProps {
   grid: string[][];
@@ -67,3 +68,5 @@ export const SimulationGrid: React.FC<GridProps> = ({ grid, agents, lights }) =>
     </div>
   );
 };
+
+SimulationGrid.displayName = 'SimulationGrid';

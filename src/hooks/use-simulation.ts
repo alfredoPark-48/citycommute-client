@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 import { SimulationState, SimulationConfig, Command, ApiResponse } from '../types';
-import { wsService } from '../api/WebSocketService';
+import { wsService } from '../api/websocket-service';
 
 const getEnv = (key: string) => (window as any).ENV?.[key] || import.meta.env[key];
 
@@ -37,12 +37,13 @@ export const useSimulation = () => {
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
+    setShowSettings(true);
     sendCommand({ type: 'pause' });
   }, [sendCommand]);
 
   const handleStep = useCallback(() => {
     setIsPlaying(false);
-    setShowSettings(false);
+    setShowSettings(true);
     sendCommand({ type: 'step' });
   }, [sendCommand]);
 
@@ -114,6 +115,7 @@ export const useSimulation = () => {
         
         if (data.running === false) {
           setIsPlaying(false);
+          setShowSettings(true);
         }
       }
     });

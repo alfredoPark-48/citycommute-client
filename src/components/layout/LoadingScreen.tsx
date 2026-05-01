@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageLayout } from './PageLayout';
-import { CustomSkeleton } from '../Common/Skeleton';
+import { CustomSkeleton } from '../common/Skeleton';
 
 export const LoadingScreen: React.FC = () => {
   return (
