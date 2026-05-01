@@ -25,63 +25,6 @@ export const useSimulation = () => {
   const [showSettings, setShowSettings] = useState(true);
   const gridCache = useRef<string[][] | null>(null);
 
-  // Initial config fetch
-  useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const response = await fetch(`${API_URL}/config`);
-        const result: ApiResponse<SimulationConfig> = await response.json();
-        if (result.success && result.data) {
-          setConfig(result.data);
-        } else {
-          toast.error('Failed to load configuration', {
-            description: `[${result.code}] ${result.message || 'Unknown error'}`,
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch simulation config:', error);
-        toast.error('Network Error', {
-          description: 'Could not connect to the simulation API.',
-        });
-      }
-    };
-
-    fetchConfig();
-  }, []);
-
-  // WebSocket Connection & Message Handling
-  useEffect(() => {
-    const wsUrl = getEnv('VITE_WS_URL');
-    wsService.connect(wsUrl);
-
-    const unsubscribe = wsService.subscribe((data: any) => {
-      if (data.type === 'config_updated') {
-        setConfig(data.config);
-        return;
-      }
-
-      if (data.tick !== undefined) {
-        if (data.grid) {
-          gridCache.current = data.grid;
-        }
-        
-        setState(prevState => ({
-          ...data,
-          grid: data.grid || gridCache.current || prevState?.grid
-        }));
-        
-        if (data.running === false) {
-          setIsPlaying(false);
-        }
-      }
-    });
-
-    return () => {
-      unsubscribe();
-      wsService.disconnect();
-    };
-  }, []);
-
   const sendCommand = useCallback((command: Command) => {
     wsService.sendCommand(command);
   }, []);
@@ -120,6 +63,66 @@ export const useSimulation = () => {
     setConfig(updated);
     sendCommand({ type: 'update_config', config: updated });
   }, [config, sendCommand]);
+
+  // Initial config fetch
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch(`${API_URL}/config`);
+        const result: ApiResponse<SimulationConfig> = await response.json();
+        if (result.success && result.data) {
+          setConfig(result.data);
+        } else {
+          toast.error('Failed to load configuration', {
+            description: `[${result.code}] ${result.message || 'Unknown error'}`,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch simulation config:', error);
+        toast.error('Network Error', {
+          description: 'Could not connect to the simulation API.',
+        });
+      }
+    };
+
+    fetchConfig();
+    
+    // Reset simulation on fresh page load/refresh
+    handleReset();
+  }, [handleReset]);
+
+  // WebSocket Connection & Message Handling
+  useEffect(() => {
+    const wsUrl = getEnv('VITE_WS_URL');
+    wsService.connect(wsUrl);
+
+    const unsubscribe = wsService.subscribe((data: any) => {
+      if (data.type === 'config_updated') {
+        setConfig(data.config);
+        return;
+      }
+
+      if (data.tick !== undefined) {
+        if (data.grid) {
+          gridCache.current = data.grid;
+        }
+        
+        setState(prevState => ({
+          ...data,
+          grid: data.grid || gridCache.current || prevState?.grid
+        }));
+        
+        if (data.running === false) {
+          setIsPlaying(false);
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      wsService.disconnect();
+    };
+  }, []);
 
   return {
     state,

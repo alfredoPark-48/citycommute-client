@@ -3,16 +3,70 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background-lighter: #1e293b;
+    --background-default: #0f172a;
+    --accent-blue: #38bdf8;
+    --accent-purple: #818cf8;
+  }
+
   body {
-    @apply font-sans bg-background text-slate-100 min-h-screen overflow-x-hidden;
-    background: radial-gradient(circle at top right, theme('colors.background.lighter'), theme('colors.background.DEFAULT'));
+    @apply font-sans bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden selection:bg-sky-500/30;
+    background: radial-gradient(circle at top right, var(--background-lighter), var(--background-default));
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-colors;
   }
 }
 
-/* Custom animations that are hard to do with just Tailwind classes */
-@keyframes waterPulse { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.7; } }
-@keyframes boardingScale { from { transform: scale(1); opacity: 1; } to { transform: scale(0.5); opacity: 0.5; } }
+@layer components {
+  .glass-card {
+    @apply bg-slate-800/40 backdrop-blur-md border border-slate-700/50 shadow-2xl;
+  }
+  
+  .glass-panel {
+    @apply bg-slate-800/30 backdrop-blur-xl border border-slate-700/50 shadow-inner;
+  }
+}
 
-/* Legend & Notification slide-ins are better kept here or moved to a motion library */
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+/* Custom animations */
+@keyframes waterPulse { 
+  0%, 100% { opacity: 0.9; transform: scale(1); } 
+  50% { opacity: 0.7; transform: scale(0.95); } 
+}
+@keyframes boardingScale { 
+  from { transform: scale(1); opacity: 1; } 
+  to { transform: scale(0.5); opacity: 0.5; } 
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1.1); filter: brightness(1.2) drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+  50% { transform: scale(0.8); filter: brightness(0.8); }
+}
+
+.animate-water-pulse {
+  animation: waterPulse 3s ease-in-out infinite;
+}
+
+.animate-boarding-scale {
+  animation: boardingScale 0.5s ease-out forwards;
+}
+
+.animate-breathe {
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+/* Smooth transitions for grid interactions */
+.grid-cell-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

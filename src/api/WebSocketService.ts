@@ -7,6 +7,7 @@ class WebSocketService {
   private socket: WebSocket | null = null;
   private messageHandlers: Set<MessageHandler> = new Set();
   private reconnectTimeout: number | null = null;
+  private commandQueue: string[] = [];
 
   connect(url: string) {
     if (this.socket) this.socket.close();
@@ -18,6 +19,13 @@ class WebSocketService {
       toast.success('Connected to CityVerse', {
         description: 'Real-time simulation link established.',
       });
+      
+      // Flush queue
+      while (this.commandQueue.length > 0) {
+        const cmd = this.commandQueue.shift();
+        if (cmd) this.socket?.send(cmd);
+      }
+
       if (this.reconnectTimeout) {
         clearTimeout(this.reconnectTimeout);
         this.reconnectTimeout = null;
@@ -27,13 +35,10 @@ class WebSocketService {
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       
-      // Check if it's an ApiResponse (notification)
       if (typeof data.success === 'boolean' && data.message) {
         const response = data as ApiResponse;
         if (response.success) {
-          toast.success(response.message, {
-            duration: 3000,
-          });
+          toast.success(response.message, { duration: 3000 });
         } else {
           toast.error(response.message, {
             description: `Error Code: ${response.code}`,
@@ -43,7 +48,6 @@ class WebSocketService {
         return;
       }
 
-      // Otherwise it's a state update
       this.messageHandlers.forEach(handler => handler(data));
     };
 
@@ -69,12 +73,15 @@ class WebSocketService {
   }
 
   sendCommand(command: Command) {
+    const message = JSON.stringify(command);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify(command));
+      this.socket.send(message);
     } else {
-      toast.error('Command Failed', {
-        description: 'WebSocket is not connected.',
-      });
+      // Queue command if not connected
+      this.commandQueue.push(message);
+      if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
+        console.log("Command queued: WebSocket not ready.");
+      }
     }
   }
 
